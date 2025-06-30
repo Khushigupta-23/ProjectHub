@@ -50,6 +50,78 @@ router.get('/logout', (req, res, next) => {
   });
 });
 
+// Edit profile route (GET)
+router.get('/users/:id/edit', isLoggedIn, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // Check if id is a valid ObjectId
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      req.flash('error', 'Invalid user ID!');
+      return res.redirect('/listings');
+    }
+    // Ensure req.user exists
+    if (!req.user || !req.user._id) {
+      req.flash('error', 'User session not found! Please log in again.');
+      return res.redirect('/login');
+    }
+    // Check if user is editing their own profile
+    if (!id === req.user._id.toString()) {
+      req.flash('error', 'You can only edit your own profile!');
+      return res.redirect(`/users/${req.user._id}`);
+    }
+    const user = await User.findById(id);
+    if (!user) {
+      req.flash('error', 'User not found!');
+      return res.redirect('/listings');
+    }
+    res.render('users/edit', { user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Update profile route (PUT)
+router.put('/users/:id', isLoggedIn, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // Check if id is a valid ObjectId
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      req.flash('error', 'Invalid user ID!');
+      return res.redirect('/listings');
+    }
+    // Ensure req.user exists
+    if (!req.user || !req.user._id) {
+      req.flash('error', 'User session not found! Please log in again.');
+      return res.redirect('/login');
+    }
+    // Check if user is editing their own profile
+    if (id !== req.user._id.toString()) {
+      req.flash('error', 'You can only edit your own profile!');
+      return res.redirect(`/users/${req.user._id}`);
+    }
+    const upload = res.locals.upload.single('profilePicture');
+    upload(req, res, async (err) => {
+      if (err) {
+        req.flash('error', 'Error uploading profile picture!');
+        return res.redirect(`/users/${id}/edit`);
+      }
+      const { username, email } = req.body;
+      const updateData = {
+        username: req.sanitize(username),
+        email: req.sanitize(email)
+      };
+      if (req.file) {
+        updateData.profilePicture = `/uploads/${req.file.filename}`;
+      }
+      await User.findByIdAndUpdate(id, updateData);
+      req.flash('success', 'Profile updated successfully!');
+      res.redirect(`/users/${id}`);
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Mark notification as read (POST)
 router.post('/notifications/:id/read', isLoggedIn, async (req, res, next) => {
   try {
@@ -69,22 +141,6 @@ router.delete('/notifications/:id', isLoggedIn, async (req, res, next) => {
     await Notification.findByIdAndDelete(id);
     req.flash('success', 'Notification deleted successfully!');
     res.redirect(`/users/${req.user._id}`);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// Clear all notifications (DELETE)
-router.delete('/notifications/clear', isLoggedIn, async (req, res, next) => {
-  try {
-    const userId = req.user?._id;
-    if (!userId) {
-      req.flash('error', 'User not found!');
-      return res.redirect('/listings');
-    }
-    await Notification.deleteMany({ recipient: userId });
-    req.flash('success', 'All notifications cleared!');
-    res.redirect(`/users/${userId}`);
   } catch (err) {
     next(err);
   }

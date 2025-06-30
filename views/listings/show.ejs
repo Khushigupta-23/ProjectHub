@@ -4,7 +4,10 @@
     <div class="card mb-4">
       <div class="card-body">
         <h2 class="card-title text-2xl font-bold text-gray-800"><%= listing.title %></h2>
-        <p class="card-text text-gray-600"><strong>Author:</strong> <%= listing.author.username %></p>
+        <div class="flex items-center mb-3">
+          <img src="<%= listing.author.profilePicture %>" alt="Author Profile Picture" class="w-10 h-10 rounded-full mr-2 object-cover">
+          <p class="card-text text-gray-600"><strong>Author:</strong> <%= listing.author.username %></p>
+        </div>
         <p class="card-text text-gray-600"><strong>Category:</strong> <%= listing.category %></p>
         <p class="card-text text-gray-600"><strong>Tags:</strong> <%= listing.tags.join(', ') %></p>
         <p class="card-text text-gray-600"><strong>Description:</strong></p>

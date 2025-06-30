@@ -16,7 +16,11 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Listing',
     default: []
-  }]
+  }],
+  profilePicture: {
+    type: String,
+    default: '/images/default-profile.png' // Default image path
+  }
 });
 
 UserSchema.plugin(passportLocalMongoose);

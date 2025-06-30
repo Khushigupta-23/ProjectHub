@@ -1,14 +1,17 @@
 <% layout('partials/boilerplate') %>
 <div class="bg-white rounded-lg shadow-lg p-8">
-  <h2 class="text-3xl font-bold text-gray-800 mb-4">Profile: <%= user.username %></h2>
-  <p class="text-gray-600 mb-6"><strong>Email:</strong> <%= user.email %></p>
+  <div class="flex items-center mb-6">
+    <img src="<%= user.profilePicture %>" alt="Profile Picture" class="w-16 h-16 rounded-full mr-4 object-cover">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">Profile: <%= user.username %></h2>
+      <p class="text-gray-600"><strong>Email:</strong> <%= user.email %></p>
+    </div>
+  </div>
+  <a href="/users/<%= user._id %>/edit" class="text-blue-600 hover:text-blue-800 font-medium mb-4 inline-block">Edit Profile</a>
   <h3 class="text-2xl font-semibold text-gray-800 mb-4">Notifications</h3>
   <% if (notifications.length === 0) { %>
     <p class="text-gray-500">No notifications yet.</p>
   <% } else { %>
-    <form action="/notifications/clear?_method=DELETE" method="POST" class="mb-4">
-      <button type="submit" class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition">Clear All Notifications</button>
-    </form>
     <div class="space-y-4">
       <% for (let notification of notifications) { %>
         <div class="bg-gray-50 rounded-lg shadow p-4 hover:shadow-md transition <%= notification.read ? 'opacity-75' : 'bg-blue-50' %>">

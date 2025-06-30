@@ -8,11 +8,23 @@ const LocalStrategy = require('passport-local');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const expressSanitizer = require('express-sanitizer');
+const multer = require('multer');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 const Review = require('./models/review');
 const Notification = require('./models/notification');
 const { isLoggedIn } = require('./middleware.js');
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage });
 
 const app = express();
 
@@ -52,11 +64,12 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// Make flash messages and current user available to all templates
+// Make flash messages, current user, and upload available to all templates
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   res.locals.currentUser = req.user;
+  res.locals.upload = upload;
   next();
 });
 
@@ -113,20 +126,3 @@ const port = 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
-
-/*abhi bhe same error a araha he esko thik krne ke liye apko kya koi specific code chiaye to aap bata degeye 1 line me , me send kr deti hu then aap thik kr dena ok
-
-
-CastError: Cast to ObjectId failed for value "clear" (type string) at path "_id" for model "Notification"
-    at SchemaObjectId.cast (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\schema\objectId.js:251:11)
-    at SchemaObjectId.SchemaType.applySetters (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\schemaType.js:1255:12)
-    at SchemaObjectId.SchemaType.castForQuery (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\schemaType.js:1673:17)
-    at cast (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\cast.js:390:32)
-    at model.Query.Query.cast (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:5055:12)
-    at model.Query.Query._castConditions (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:2351:10)
-    at model.Query._findOneAndDelete (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:3593:8)
-    at model.Query.exec (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:4604:80)
-    at processTicksAndRejections (node:internal/process/task_queues:96:5)
-    at async C:\my collage\Programming\projects\ProjectHub\routes\user.js:69:5
-/*/
