@@ -1,0 +1,60 @@
+<% layout('partials/boilerplate') %>
+<div class="max-w-lg mx-auto bg-white rounded-lg shadow-lg p-8">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Edit Project Idea</h2>
+  <form action="/listings/<%= listing._id %>?_method=PUT" method="POST" class="space-y-4 needs-validation" novalidate>
+    <div>
+      <label for="title" class="block text-gray-700 font-medium mb-1">Title</label>
+      <input type="text" id="title" name="title" value="<%= listing.title %>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required maxlength="100">
+      <div class="text-red-500 text-sm mt-1 hidden">Please enter a title (max 100 characters).</div>
+    </div>
+    <div>
+      <label for="description" class="block text-gray-700 font-medium mb-1">Description</label>
+      <textarea id="description" name="description" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="5" required maxlength="500"><%= listing.description %></textarea>
+      <div class="text-red-500 text-sm mt-1 hidden">Please enter a description (max 500 characters).</div>
+    </div>
+    <div>
+      <label for="category" class="block text-gray-700 font-medium mb-1">Category</label>
+      <select id="category" name="category" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        <option value="" disabled>Select a category</option>
+        <option value="Web Development" <%= listing.category === 'Web Development' ? 'selected' : '' %>>Web Development</option>
+        <option value="Mobile App Development" <%= listing.category === 'Mobile App Development' ? 'selected' : '' %>>Mobile App Development</option>
+        <option value="Artificial Intelligence/Machine Learning" <%= listing.category === 'Artificial Intelligence/Machine Learning' ? 'selected' : '' %>>Artificial Intelligence/Machine Learning</option>
+        <option value="Internet of Things (IoT)" <%= listing.category === 'Internet of Things (IoT)' ? 'selected' : '' %>>Internet of Things (IoT)</option>
+        <option value="Robotics" <%= listing.category === 'Robotics' ? 'selected' : '' %>>Robotics</option>
+        <option value="Cybersecurity" <%= listing.category === 'Cybersecurity' ? 'selected' : '' %>>Cybersecurity</option>
+        <option value="Data Science" <%= listing.category === 'Data Science' ? 'selected' : '' %>>Data Science</option>
+        <option value="Cloud Computing" <%= listing.category === 'Cloud Computing' ? 'selected' : '' %>>Cloud Computing</option>
+        <option value="Embedded Systems" <%= listing.category === 'Embedded Systems' ? 'selected' : '' %>>Embedded Systems</option>
+        <option value="Game Development" <%= listing.category === 'Game Development' ? 'selected' : '' %>>Game Development</option>
+        <option value="Blockchain" <%= listing.category === 'Blockchain' ? 'selected' : '' %>>Blockchain</option>
+        <option value="Augmented Reality/Virtual Reality (AR/VR)" <%= listing.category === 'Augmented Reality/Virtual Reality (AR/VR)' ? 'selected' : '' %>>Augmented Reality/Virtual Reality (AR/VR)</option>
+        <option value="Software Engineering" <%= listing.category === 'Software Engineering' ? 'selected' : '' %>>Software Engineering</option>
+        <option value="Hardware Design" <%= listing.category === 'Hardware Design' ? 'selected' : '' %>>Hardware Design</option>
+        <option value="Signal Processing" <%= listing.category === 'Signal Processing' ? 'selected' : '' %>>Signal Processing</option>
+      </select>
+      <div class="text-red-500 text-sm mt-1 hidden">Please select a category.</div>
+    </div>
+    <div>
+      <label for="tags" class="block text-gray-700 font-medium mb-1">Tags (comma-separated)</label>
+      <input type="text" id="tags" name="tags" value="<%= listing.tags.join(', ') %>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="100">
+      <div class="text-red-500 text-sm mt-1 hidden">Tags are optional (max 100 characters).</div>
+    </div>
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Update Idea</button>
+  </form>
+</div>
+<script>
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+          form.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>

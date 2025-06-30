@@ -1,0 +1,64 @@
+<% layout('partials/boilerplate') %>
+<div class="row">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">All Project Ideas</h2>
+  <!-- Search, Sort, and Category Filter Form -->
+  <form action="/listings" method="GET" class="mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="col-span-2">
+        <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" name="q" placeholder="Search by title, description, category, or tags" value="<%= q || '' %>">
+      </div>
+      <div>
+        <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" name="sort">
+          <option value="" <%= !sort ? 'selected' : '' %>>Sort By</option>
+          <option value="upvotes" <%= sort === 'upvotes' ? 'selected' : '' %>>Most Upvoted</option>
+          <option value="date" <%= sort === 'date' ? 'selected' : '' %>>Newest</option>
+        </select>
+      </div>
+      <div>
+        <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" name="category">
+          <option value="all" <%= category === 'all' ? 'selected' : '' %>>All Categories</option>
+          <% for (let cat of categories) { %>
+            <option value="<%= cat %>" <%= category === cat ? 'selected' : '' %>><%= cat %></option>
+          <% } %>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="mt-4 w-full md:w-auto bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition">Search</button>
+  </form>
+  <% if (listings.length === 0) { %>
+    <p class="text-gray-500">No project ideas found. Be the first to add one!</p>
+  <% } else { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <% for (let listing of listings) { %>
+        <div class="card bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+          <h5 class="text-lg font-semibold text-gray-800 mb-2"><%= listing.title %></h5>
+          <p class="text-gray-600 mb-3"><%= listing.description.substring(0, 100) %>...</p>
+          <p class="text-sm text-gray-500 mb-3">
+            <strong>By:</strong> <%= listing.author.username %> | 
+            <strong>Category:</strong> <%= listing.category %>
+          </p>
+          <p class="text-sm text-gray-500 mb-3">
+            <strong>Tags:</strong> <%= listing.tags.join(', ') %>
+          </p>
+          <a href="/listings/<%= listing._id %>" class="text-blue-600 hover:text-blue-800 font-medium">View Details</a>
+        </div>
+      <% } %>
+    </div>
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation" class="mt-6">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="/listings?page=<%= currentPage - 1 %>&q=<%= q || '' %>&sort=<%= sort || '' %>&category=<%= category || 'all' %>">Previous</a>
+        </li>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link" href="/listings?page=<%= i %>&q=<%= q || '' %>&sort=<%= sort || '' %>&category=<%= category || 'all' %>"><%= i %></a>
+          </li>
+        <% } %>
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="/listings?page=<%= currentPage + 1 %>&q=<%= q || '' %>&sort=<%= sort || '' %>&category=<%= category || 'all' %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  <% } %>
+</div>

@@ -1,0 +1,29 @@
+<% layout('partials/boilerplate') %>
+<div class="bg-blue-50 py-12">
+  <div class="text-center">
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to ProjectHub</h1>
+    <p class="text-lg text-gray-600 mb-6">Discover and share innovative project ideas with our community!</p>
+    <% if (currentUser) { %>
+      <a href="/listings" class="inline-block bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition">Explore Ideas</a>
+    <% } else { %>
+      <a href="/register" class="inline-block bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition">Get Started</a>
+    <% } %>
+  </div>
+</div>
+<div class="mt-10">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Featured Ideas</h2>
+  <% if (featuredListings.length === 0) { %>
+    <p class="text-gray-500">No featured ideas yet. Start sharing!</p>
+  <% } else { %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% for (let listing of featuredListings) { %>
+        <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold text-gray-800 mb-2"><%= listing.title %></h3>
+          <p class="text-gray-600 mb-4"><%= listing.description.substring(0, 100) %>...</p>
+          <p class="text-sm text-gray-500">By <%= listing.author.username %> | Upvotes: <%= listing.upvotes %></p>
+          <a href="/listings/<%= listing._id %>" class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">View Details</a>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+</div>
