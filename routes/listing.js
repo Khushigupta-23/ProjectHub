@@ -84,10 +84,10 @@ router.get('/listings/new', isLoggedIn, (req, res) => {
 router.post('/listings', isLoggedIn, async (req, res) => {
   const { title, description, category, tags } = req.body;
   const listing = new Listing({
-    title,
-    description,
+    title: req.sanitize(title),
+    description: req.sanitize(description),
     category,
-    tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+    tags: tags ? req.sanitize(tags).split(',').map(tag => tag.trim()) : [],
     author: req.user._id
   });
   await listing.save();
@@ -96,19 +96,27 @@ router.post('/listings', isLoggedIn, async (req, res) => {
 });
 
 // Show single listing (GET)
-router.get('/listings/:id', isLoggedIn, async (req, res) => {
-  const { id } = req.params;
-  const listing = await Listing.findById(id).populate('author').populate({
-    path: 'comments',
-    populate: { path: 'author' }
-  });
-  if (!listing) {
-    req.flash('error', 'Project idea not found!');
-    return res.redirect('/listings');
+router.get('/listings/:id', isLoggedIn, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const listing = await Listing.findById(id).populate('author').populate({
+      path: 'comments',
+      populate: { path: 'author' }
+    });
+    if (!listing) {
+      req.flash('error', 'Project idea not found!');
+      return res.redirect('/listings');
+    }
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      req.flash('error', 'User not found!');
+      return res.redirect('/listings');
+    }
+    const isSaved = user.savedIdeas ? user.savedIdeas.includes(id) : false;
+    res.render('listings/show', { listing, isSaved });
+  } catch (err) {
+    next(err);
   }
-  const user = await User.findById(req.user._id);
-  const isSaved = user.savedIdeas.includes(id);
-  res.render('listings/show', { listing, isSaved });
 });
 
 // Edit listing form (GET)
@@ -127,10 +135,10 @@ router.put('/listings/:id', isLoggedIn, isOwner, async (req, res) => {
   const { id } = req.params;
   const { title, description, category, tags } = req.body;
   const listing = await Listing.findByIdAndUpdate(id, {
-    title,
-    description,
+    title: req.sanitize(title),
+    description: req.sanitize(description),
     category,
-    tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+    tags: tags ? req.sanitize(tags).split(',').map(tag => tag.trim()) : []
   }, { new: true });
   req.flash('success', 'Project idea updated successfully!');
   res.redirect(`/listings/${id}`);
@@ -170,6 +178,10 @@ router.post('/listings/:id/downvote', isLoggedIn, canVote, async (req, res) => {
 router.post('/listings/:id/save', isLoggedIn, async (req, res) => {
   const { id } = req.params;
   const user = await User.findById(req.user._id);
+  if (!user) {
+    req.flash('error', 'User not found!');
+    return res.redirect(`/listings/${id}`);
+  }
   if (!user.savedIdeas.includes(id)) {
     user.savedIdeas.push(id);
     await user.save();
@@ -184,6 +196,10 @@ router.post('/listings/:id/save', isLoggedIn, async (req, res) => {
 router.delete('/listings/:id/save', isLoggedIn, async (req, res) => {
   const { id } = req.params;
   const user = await User.findById(req.user._id);
+  if (!user) {
+    req.flash('error', 'User not found!');
+    return res.redirect(`/listings/${id}`);
+  }
   user.savedIdeas = user.savedIdeas.filter(savedId => savedId.toString() !== id);
   await user.save();
   req.flash('success', 'Idea unsaved successfully!');

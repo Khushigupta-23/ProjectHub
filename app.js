@@ -7,14 +7,12 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
+const expressSanitizer = require('express-sanitizer');
 const User = require('./models/user');
 const Listing = require('./models/listing');
 const Review = require('./models/review');
 const Notification = require('./models/notification');
 const { isLoggedIn } = require('./middleware.js');
-
-
-
 
 const app = express();
 
@@ -29,6 +27,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Parse form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Sanitize inputs
+app.use(expressSanitizer());
 
 // Method override for PUT/DELETE requests
 app.use(methodOverride('_method'));
@@ -83,17 +84,21 @@ app.get('/', async (req, res) => {
 });
 
 // User profile route
-app.get('/users/:id', async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findById(id).populate('savedIdeas');
-  if (!user) {
-    req.flash('error', 'User not found!');
-    return res.redirect('/listings');
+app.get('/users/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).populate('savedIdeas');
+    if (!user) {
+      req.flash('error', 'User not found!');
+      return res.redirect('/listings');
+    }
+    const listings = await Listing.find({ author: id }).populate('author');
+    const reviews = await Review.find({ author: id }).populate('listing');
+    const notifications = await Notification.find({ recipient: id }).populate('listing');
+    res.render('users/profile', { user, listings, reviews, notifications, savedIdeas: user.savedIdeas });
+  } catch (err) {
+    next(err);
   }
-  const listings = await Listing.find({ author: id }).populate('author');
-  const reviews = await Review.find({ author: id }).populate('listing');
-  const notifications = await Notification.find({ recipient: id }).populate('listing');
-  res.render('users/profile', { user, listings, reviews, notifications, savedIdeas: user.savedIdeas });
 });
 
 // Error handling middleware
@@ -108,3 +113,20 @@ const port = 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
+/*abhi bhe same error a araha he esko thik krne ke liye apko kya koi specific code chiaye to aap bata degeye 1 line me , me send kr deti hu then aap thik kr dena ok
+
+
+CastError: Cast to ObjectId failed for value "clear" (type string) at path "_id" for model "Notification"
+    at SchemaObjectId.cast (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\schema\objectId.js:251:11)
+    at SchemaObjectId.SchemaType.applySetters (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaObjectId.SchemaType.castForQuery (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\schemaType.js:1673:17)
+    at cast (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\cast.js:390:32)
+    at model.Query.Query.cast (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:5055:12)
+    at model.Query.Query._castConditions (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:2351:10)
+    at model.Query._findOneAndDelete (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:3593:8)
+    at model.Query.exec (C:\my collage\Programming\projects\ProjectHub\node_modules\mongoose\lib\query.js:4604:80)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at async C:\my collage\Programming\projects\ProjectHub\routes\user.js:69:5
+/*/

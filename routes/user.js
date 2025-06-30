@@ -5,7 +5,6 @@ const User = require('../models/user');
 const Notification = require('../models/notification');
 const { isLoggedIn } = require('../middleware.js');
 
-
 // Register route (GET)
 router.get('/register', (req, res) => {
   res.render('users/register');
@@ -52,19 +51,43 @@ router.get('/logout', (req, res, next) => {
 });
 
 // Mark notification as read (POST)
-router.post('/notifications/:id/read', isLoggedIn, async (req, res) => {
-  const { id } = req.params;
-  await Notification.findByIdAndUpdate(id, { read: true });
-  req.flash('success', 'Notification marked as read!');
-  res.redirect(`/users/${req.user._id}`);
+router.post('/notifications/:id/read', isLoggedIn, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await Notification.findByIdAndUpdate(id, { read: true });
+    req.flash('success', 'Notification marked as read!');
+    res.redirect(`/users/${req.user._id}`);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Delete notification (DELETE)
-router.delete('/notifications/:id', isLoggedIn, async (req, res) => {
-  const { id } = req.params;
-  await Notification.findByIdAndDelete(id);
-  req.flash('success', 'Notification deleted successfully!');
-  res.redirect(`/users/${req.user._id}`);
+router.delete('/notifications/:id', isLoggedIn, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await Notification.findByIdAndDelete(id);
+    req.flash('success', 'Notification deleted successfully!');
+    res.redirect(`/users/${req.user._id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Clear all notifications (DELETE)
+router.delete('/notifications/clear', isLoggedIn, async (req, res, next) => {
+  try {
+    const userId = req.user?._id;
+    if (!userId) {
+      req.flash('error', 'User not found!');
+      return res.redirect('/listings');
+    }
+    await Notification.deleteMany({ recipient: userId });
+    req.flash('success', 'All notifications cleared!');
+    res.redirect(`/users/${userId}`);
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

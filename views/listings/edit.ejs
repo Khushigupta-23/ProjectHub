@@ -36,12 +36,18 @@
     </div>
     <div>
       <label for="tags" class="block text-gray-700 font-medium mb-1">Tags (comma-separated)</label>
-      <input type="text" id="tags" name="tags" value="<%= listing.tags.join(', ') %>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="100">
+      <input type="text" id="tags" name="tags" value="<%= listing.tags.join(', ') %>" placeholder="e.g., JavaScript, Python, IoT" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="100">
       <div class="text-red-500 text-sm mt-1 hidden">Tags are optional (max 100 characters).</div>
     </div>
-    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Update Idea</button>
+    <div class="relative">
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Update Idea</button>
+      <div id="spinner" class="hidden absolute inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-600"></div>
+      </div>
+    </div>
   </form>
 </div>
+<script src="/js/form.js"></script>
 <script>
   (function () {
     'use strict';

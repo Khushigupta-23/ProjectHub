@@ -1,4 +1,3 @@
-/* Full Path: C:\my collage\Programming\projects\ProjectHub\models\user.js */
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
@@ -12,7 +11,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true
-  }
+  },
+  savedIdeas: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Listing',
+    default: []
+  }]
 });
 
 UserSchema.plugin(passportLocalMongoose);
