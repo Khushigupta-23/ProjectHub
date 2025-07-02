@@ -21,7 +21,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: '/images/default-profile.png' // Default image path
   },
- 
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
 });
 
 UserSchema.plugin(passportLocalMongoose);

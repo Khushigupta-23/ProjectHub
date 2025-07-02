@@ -14,6 +14,7 @@ const Listing = require('./models/listing');
 const Review = require('./models/review');
 const Notification = require('./models/notification');
 const { isLoggedIn } = require('./middleware.js');
+const adminRoutes = require('./routes/admin');
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -72,7 +73,6 @@ app.use((req, res, next) => {
   res.locals.upload = upload;
   next();
 });
-
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/projectHub', {
   useNewUrlParser: true,
@@ -89,6 +89,7 @@ const reviewRoutes = require('./routes/review');
 app.use('/', userRoutes);
 app.use('/', listingRoutes);
 app.use('/', reviewRoutes);
+app.use('/', adminRoutes);
 
 // Home route with featured ideas
 app.get('/', async (req, res) => {
