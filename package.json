@@ -13,5 +13,26 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0"
-  }
+  },
+  "name": "projecthub",
+  "version": "1.0.0",
+  "main": "app.js",
+  "devDependencies": {
+    "tailwindcss": "^4.1.11"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Khushigupta-23/ProjectHub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Khushigupta-23/ProjectHub/issues"
+  },
+  "homepage": "https://github.com/Khushigupta-23/ProjectHub#readme",
+  "description": ""
 }
