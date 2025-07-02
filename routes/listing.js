@@ -222,4 +222,23 @@ router.delete('/listings/:id/save', isLoggedIn, async (req, res) => {
   res.redirect(`/listings/${id}`);
 });
 
+// POST /listings/:id/report (Report Listing)
+router.post('/listings/:id/report', isLoggedIn, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const listing = await Listing.findById(id);
+    if (!listing) {
+      req.flash('error', 'Project idea not found!');
+      return res.redirect('/listings');
+    }
+    listing.reports += 1;
+    await listing.save();
+    req.flash('success', 'Project idea reported successfully!');
+    res.redirect(`/listings/${id}`);
+  } catch (err) {
+    req.flash('error', 'Failed to report project idea!');
+    res.redirect(`/listings/${id}`);
+  }
+});
+
 module.exports = router;

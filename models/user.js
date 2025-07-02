@@ -1,7 +1,14 @@
-const mongoose = require('mongoose');
+const express = require('express');
 const passportLocalMongoose = require('passport-local-mongoose');
 
-const UserSchema = new mongoose.Schema({
+const router = express.Router();
+
+
+const mongoose = require('mongoose'); // ✅ Add this line
+const { Schema } = mongoose;
+
+
+const UserSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -13,7 +20,7 @@ const UserSchema = new mongoose.Schema({
     unique: true
   },
   savedIdeas: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Listing',
     default: []
   }],
@@ -24,8 +31,15 @@ const UserSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false
-  }
+  },
+  notifications: [{
+    message: { type: String, required: true },
+    read: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now },
+    listing: { type: Schema.Types.ObjectId, ref: 'Listing' }
+  }]
 });
 
 UserSchema.plugin(passportLocalMongoose);
+
 module.exports = mongoose.model('User', UserSchema);

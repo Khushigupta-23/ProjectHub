@@ -38,7 +38,11 @@ const listingSchema = new mongoose.Schema({
   comments: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Review'
-  }]
+  }],
+  reports: {
+    type: Number,
+    default: 0
+  },
 });
 
 module.exports = mongoose.model('Listing', listingSchema);

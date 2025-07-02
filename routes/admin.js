@@ -4,6 +4,8 @@ const Listing = require('../models/listing');
 const User = require('../models/user');
 const Review = require('../models/review');
 const { isLoggedIn } = require('../middleware');
+const Notification = require('../models/notification'); 
+
 
 // Middleware to check if user is admin
 const isAdmin = async (req, res, next) => {
@@ -18,9 +20,10 @@ const isAdmin = async (req, res, next) => {
 router.get('/admin', isLoggedIn, isAdmin, async (req, res, next) => {
   try {
     const listings = await Listing.find().populate('author');
+    const reportedListings = await Listing.find({ reports: { $gt: 0 } }).populate('author');
     const users = await User.find();
     const reviews = await Review.find().populate('author').populate('listing');
-    res.render('admin/index', { listings, users, reviews });
+    res.render('admin/index', { listings, reportedListings, users, reviews });
   } catch (err) {
     req.flash('error', 'Something went wrong!');
     res.redirect('/listings');
@@ -28,17 +31,35 @@ router.get('/admin', isLoggedIn, isAdmin, async (req, res, next) => {
 });
 
 // DELETE /admin/listings/:id (Delete a listing)
+// DELETE /admin/listings/:id (Delete a listing)
 router.delete('/admin/listings/:id', isLoggedIn, isAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
+    const listing = await Listing.findById(id).populate('author');
+    if (!listing) {
+      req.flash('error', 'Project idea not found!');
+      return res.redirect('/admin');
+    }
+
+    // ✅ Create a new notification using the Notification model
+    await Notification.create({
+      recipient: listing.author._id,
+      message: `Your project idea "${listing.title}" was deleted by an admin due to reports. Please avoid posting inappropriate content.`,
+      listing: listing._id,
+      read: false
+    });
+
+    // ✅ Delete the listing
     await Listing.findByIdAndDelete(id);
-    req.flash('success', 'Project idea deleted successfully!');
+
+    req.flash('success', 'Project idea deleted and warning sent to user!');
     res.redirect('/admin');
   } catch (err) {
     req.flash('error', 'Failed to delete project idea!');
     res.redirect('/admin');
   }
 });
+
 
 // DELETE /admin/users/:id (Delete a user)
 router.delete('/admin/users/:id', isLoggedIn, isAdmin, async (req, res, next) => {

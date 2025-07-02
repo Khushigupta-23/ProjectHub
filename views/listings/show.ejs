@@ -35,6 +35,11 @@
             <button type="submit" class="btn btn-danger">Delete</button>
           </form>
         <% } %>
+        <% if (currentUser && !listing.author.equals(currentUser._id)) { %>
+  <form action="/listings/<%= listing._id %>/report" method="POST" class="d-inline">
+    <button type="submit" class="btn btn-warning me-2" onclick="return confirm('Are you sure you want to report this project idea?')">Report</button>
+  </form>
+<% } %>
         <a href="/listings" class="btn btn-secondary mt-3">Back to All Ideas</a>
       </div>
     </div>
