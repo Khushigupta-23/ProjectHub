@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Listing = require('../models/listing');
+const Listing = require('../models/listing.js');
 const User = require('../models/user');
-const Report = require('../models/report');
 const { isLoggedIn, isOwner, canVote } = require('../middleware');
 
 // Index route - Show all listings with search, sort, category filter, and pagination
@@ -221,36 +220,6 @@ router.delete('/listings/:id/save', isLoggedIn, async (req, res) => {
   await user.save();
   req.flash('success', 'Idea unsaved successfully!');
   res.redirect(`/listings/${id}`);
-});
-
-// Report listing (POST)
-router.post('/listings/:id/report', isLoggedIn, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { reason } = req.body;
-    const listing = await Listing.findById(id);
-    if (!listing) {
-      req.flash('error', 'Project idea not found!');
-      return res.redirect('/listings');
-    }
-    // Check if user already reported this listing
-    const existingReport = await Report.findOne({ listing: id, reportedBy: req.user._id });
-    if (existingReport) {
-      req.flash('error', 'You have already reported this idea!');
-      return res.redirect(`/listings/${id}`);
-    }
-    const report = new Report({
-      listing: id,
-      reportedBy: req.user._id,
-      reason: req.sanitize(reason)
-    });
-    await report.save();
-    req.flash('success', 'Idea reported successfully!');
-    res.redirect(`/listings/${id}`);
-  } catch (err) {
-    req.flash('error', 'Error reporting idea!');
-    res.redirect(`/listings/${id}`);
-  }
 });
 
 module.exports = router;

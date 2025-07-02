@@ -20,7 +20,8 @@ const UserSchema = new mongoose.Schema({
   profilePicture: {
     type: String,
     default: '/images/default-profile.png' // Default image path
-  }
+  },
+ 
 });
 
 UserSchema.plugin(passportLocalMongoose);

@@ -1,30 +1,40 @@
 <% layout('partials/boilerplate') %>
 <div class="max-w-lg mx-auto bg-white rounded-lg shadow-lg p-8">
-  <h2 class="text-2xl font-bold text-gray-800 mb-6">Edit Profile</h2>
-  <form action="/users/<%= user._id %>?_method=PUT" method="POST" enctype="multipart/form-data" class="space-y-4 needs-validation" novalidate>
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Edit Project Idea</h2>
+  <form action="/listings/<%= listing._id %>?_method=PUT" method="POST" class="space-y-4 needs-validation" novalidate>
     <div>
-      <label for="username" class="block text-gray-700 font-medium mb-1">Username</label>
-      <input type="text" id="username" name="username" value="<%= user.username %>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required maxlength="50">
-      <div class="text-red-500 text-sm mt-1 hidden">Please enter a username (max 50 characters).</div>
+      <label for="title" class="block text-gray-700 font-medium mb-1">Title</label>
+      <input type="text" id="title" name="title" value="<%= listing.title %>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required maxlength="100">
+      <div class="text-red-500 text-sm mt-1 hidden">Please enter a title (max 100 characters).</div>
     </div>
     <div>
-      <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
-      <input type="email" id="email" name="email" value="<%= user.email %>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-      <div class="text-red-500 text-sm mt-1 hidden">Please enter a valid email.</div>
+      <label for="description" class="block text-gray-700 font-medium mb-1">Description</label>
+      <textarea id="description" name="description" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required><%= listing.description %></textarea>
+      <div class="text-red-500 text-sm mt-1 hidden">Please enter a description.</div>
     </div>
     <div>
-      <label for="profilePicture" class="block text-gray-700 font-medium mb-1">Profile Picture</label>
-      <input type="file" id="profilePicture" name="profilePicture" accept="image/*" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <div class="text-gray-500 text-sm mt-1">Optional: Upload a new profile picture (JPEG/PNG).</div>
+      <label for="category" class="block text-gray-700 font-medium mb-1">Category</label>
+      <select id="category" name="category" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        <option value="" disabled>Select a category</option>
+        <% for (let cat of ['Web Development', 'Mobile App Development', 'Artificial Intelligence/Machine Learning', 'Internet of Things (IoT)', 'Robotics', 'Cybersecurity', 'Data Science', 'Cloud Computing', 'Embedded Systems', 'Game Development', 'Blockchain', 'Augmented Reality/Virtual Reality (AR/VR)', 'Software Engineering', 'Hardware Design', 'Signal Processing']) { %>
+          <option value="<%= cat %>" <%= listing.category === cat ? 'selected' : '' %>><%= cat %></option>
+        <% } %>
+      </select>
+      <div class="text-red-500 text-sm mt-1 hidden">Please select a category.</div>
+    </div>
+    <div>
+      <label for="tags" class="block text-gray-700 font-medium mb-1">Tags (comma-separated)</label>
+      <input type="text" id="tags" name="tags" value="<%= listing.tags.join(', ') %>" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="text-gray-500 text-sm mt-1">Optional: Enter tags separated by commas.</div>
     </div>
     <div class="relative">
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Update Profile</button>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Update Project Idea</button>
       <div id="spinner" class="hidden absolute inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center">
         <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-600"></div>
       </div>
     </div>
   </form>
-  <a href="/users/<%= user._id %>" class="mt-4 inline-block text-blue-600 hover:text-blue-800">Back to Profile</a>
+  <a href="/listings/<%= listing._id %>" class="mt-4 inline-block text-blue-600 hover:text-blue-800">Back to Project Idea</a>
 </div>
 <script src="/js/form.js"></script>
 <script>
