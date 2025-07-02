@@ -1,18 +1,39 @@
-.navbar-custom {
-  background-color: #1e40af; /* Dark blue navbar */
+/* Gradient background for full page */
+body {
+  background: linear-gradient(135deg, #4f46e5, #9333ea, #ec4899);
+  color: #fff;
 }
-.navbar-custom .navbar-brand,
-.navbar-custom .nav-link {
-  color: #ffffff;
+
+/* Make navbar taller and more spacious */
+.navbar {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
-.navbar-custom .nav-link:hover {
-  color: #dbeafe;
+
+/* Make the navbar-brand icon larger */
+.navbar-brand i {
+  font-size: 1.8rem;
+  /* Bigger icon */
+  color: #1e40af;
+  /* Dark blue color (optional) */
 }
+
+/* Make nav links slightly larger */
+.nav-link {
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Card styling */
 .card {
   margin-bottom: 1.5rem;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #000;
+  /* Keep card text dark for contrast */
 }
+
+/* Back to top button */
 .back-to-top {
   position: fixed;
   bottom: 20px;
@@ -20,13 +41,21 @@
   display: none;
   z-index: 1000;
 }
+
 .back-to-top.show {
   display: block;
 }
+
+/* Pagination buttons */
 .pagination .page-item.active .page-link {
-  background-color: #1e40af;
-  border-color: #1e40af;
+  background-color: #9333ea;
+  border-color: #9333ea;
 }
+
 .pagination .page-link {
-  color: #1e40af;
+  color: #ffffff;
+}
+
+input:focus, textarea:focus {
+  outline: 2px solid #9333ea;
 }
